@@ -1,0 +1,161 @@
+# Ensemble Model Configuration for 30-Species Bird Call Classification
+# This configuration combines 6 different models for improved accuracy
+
+# Audio preprocessing parameters (must match training exactly)
+audio:
+  sample_rate: 44100
+  segment_duration: 3.0  # seconds
+  segment_overlap: 0.5  # 50% overlap
+  pre_emphasis_coeff: 0.97
+
+# Mel-spectrogram parameters
+spectrogram:
+  n_fft: 2048
+  hop_length: 512
+  n_mels: 128
+  f_min: 300
+  f_max: 15000
+  top_db: 80
+  # Expected shape per segment: (1, 128, 259)
+
+# Model configurations with performance-based weights
+models:
+  model_1:
+    name: "EfficientNet-B1"
+    path: "D:\\University\\Comp702\\project\\model 1\\best_model.pth"
+    type: "efficientnet"
+    test_accuracy: 0.9589
+    weight: 1.2  # Higher weight due to excellent performance
+    enabled: true
+    
+  model_2:
+    name: "ResNet-50 CBAM"
+    path: "D:\\University\\Comp702\\project\\model 2\\checkpoints\\best_model.pth"
+    type: "resnet50_cbam"
+    test_accuracy: 0.9815
+    weight: 1.5  # Highest weight due to best test accuracy
+    enabled: true
+    
+  model_3:
+    name: "DenseNet-121"
+    path: "D:\\University\\Comp702\\project\\model 3\\checkpoints\\best_model.pth"
+    type: "densenet121"
+    test_accuracy: 0.8633
+    weight: 0.9  # Lower weight due to lower accuracy
+    enabled: true
+    
+  model_4:
+    name: "Audio Spectrogram Transformer"
+    path: "D:\\University\\Comp702\\project\\model 4\\fast_model_best_fixed.pth"
+    type: "ast"
+    test_accuracy: 0.8561
+    weight: 0.85  # Lower weight
+    enabled: true
+    
+  model_5:
+    name: "ConvNeXt-Tiny"
+    path: "D:\\University\\Comp702\\project\\model 5\\checkpoints\\best.pth"
+    type: "convnext"
+    test_accuracy: 0.9652
+    weight: 1.3  # High weight due to excellent performance
+    enabled: true
+    
+  model_6:
+    name: "PANNs CNN14"
+    path: "D:\\University\\Comp702\\project\\model 6\\outputs\\20250814_163532\\best_model.pth"
+    type: "panns"
+    test_accuracy: 0.8859
+    weight: 1.0  # Baseline weight
+    enabled: true
+
+# Ensemble strategies
+ensemble:
+  strategy: "weighted_average"  # Options: weighted_average, majority_voting, stacking
+  confidence_threshold: 0.7  # Minimum confidence for predictions
+  use_calibration: true  # Apply temperature scaling for confidence calibration
+  temperature: 1.5  # Temperature for calibration
+  
+# Species information
+species:
+  num_classes: 30
+  mapping_file: "D:\\University\\Comp702\\project\\preprocessing\\species_mapping.json"
+  names:
+    - "Barn Owl"
+    - "Black-headed Gull"
+    - "Blackcap"
+    - "Blue Tit"
+    - "Bullfinch"
+    - "Chaffinch"
+    - "Chiffchaff"
+    - "Coal Tit"
+    - "Common Blackbird"
+    - "Coot"
+    - "Dunnock"
+    - "Eurasian Magpie"
+    - "Eurasian Wren"
+    - "European Greenfinch"
+    - "European Robin"
+    - "Fieldfare"
+    - "Goldcrest"
+    - "Great Spotted Woodpecker"
+    - "Great Tit"
+    - "House Sparrow"
+    - "Jackdaw"
+    - "Long-tailed Tit"
+    - "Mallard"
+    - "Moorhen"
+    - "Nuthatch"
+    - "Pied Wagtail"
+    - "Starling"
+    - "Swallow"
+    - "Tawny Owl"
+    - "Water Rail"
+
+  # Scientific names for complete output
+  scientific_names:
+    "Barn Owl": "Tyto alba"
+    "Black-headed Gull": "Chroicocephalus ridibundus"
+    "Blackcap": "Sylvia atricapilla"
+    "Blue Tit": "Cyanistes caeruleus"
+    "Bullfinch": "Pyrrhula pyrrhula"
+    "Chaffinch": "Fringilla coelebs"
+    "Chiffchaff": "Phylloscopus collybita"
+    "Coal Tit": "Periparus ater"
+    "Common Blackbird": "Turdus merula"
+    "Coot": "Fulica atra"
+    "Dunnock": "Prunella modularis"
+    "Eurasian Magpie": "Pica pica"
+    "Eurasian Wren": "Troglodytes troglodytes"
+    "European Greenfinch": "Chloris chloris"
+    "European Robin": "Erithacus rubecula"
+    "Fieldfare": "Turdus pilaris"
+    "Goldcrest": "Regulus regulus"
+    "Great Spotted Woodpecker": "Dendrocopos major"
+    "Great Tit": "Parus major"
+    "House Sparrow": "Passer domesticus"
+    "Jackdaw": "Corvus monedula"
+    "Long-tailed Tit": "Aegithalos caudatus"
+    "Mallard": "Anas platyrhynchos"
+    "Moorhen": "Gallinula chloropus"
+    "Nuthatch": "Sitta europaea"
+    "Pied Wagtail": "Motacilla alba"
+    "Starling": "Sturnus vulgaris"
+    "Swallow": "Hirundo rustica"
+    "Tawny Owl": "Strix aluco"
+    "Water Rail": "Rallus aquaticus"
+
+# Inference settings
+inference:
+  batch_size: 32
+  device: "cuda"  # or "cpu"
+  num_workers: 0  # Set to 0 for Windows
+  use_mixed_precision: true
+  max_segments_per_file: 1000  # Maximum segments to process per audio file
+
+# Output settings
+output:
+  save_predictions: true
+  save_confidence_scores: true
+  save_model_disagreements: true
+  output_dir: "D:\\University\\Comp702\\project\\ensemble model\\outputs"
+  verbose: true
