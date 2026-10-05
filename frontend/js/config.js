@@ -1,12 +1,8 @@
-// Configuration file for API keys and endpoints
+// Configuration file for API endpoints
 const CONFIG = {
     // Backend API endpoint
     API_ENDPOINT: 'http://localhost:5000/api/classify',
-    
-    // Image search API keys
-    UNSPLASH_API_KEY: 'K0Z0oC5jL19HkMEiVJFEkcaGUI5QgJJdvmL01ZdJBjE', // Your Unsplash Access Key
-    FLICKR_API_KEY: 'YOUR_FLICKR_API_KEY',     // Get from https://www.flickr.com/services/api/
-    
+
     // Fallback bird images (British species)
     BIRD_IMAGES: {
         'Barn Owl': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Tyto_alba_-British_Wildlife_Centre%2C_Surrey%2C_England-8a_%281%29.jpg/800px-Tyto_alba_-British_Wildlife_Centre%2C_Surrey%2C_England-8a_%281%29.jpg',
