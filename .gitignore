@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Model weights and data (too large for the repository)
+*.pth
+*.pt
+*.dat
+*.npy
+
+# Runtime output
+backend/uploads/
+outputs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
