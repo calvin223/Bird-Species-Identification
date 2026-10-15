@@ -17,7 +17,7 @@ echo.
 echo ==============================================================
 echo.
 
-cd /d "D:\University\Comp702\project\frontend\backend_integration"
+cd /d "%~dp0..\backend"
 
 REM Kill old process
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr :5000') do (
@@ -29,7 +29,7 @@ timeout /t 2 /nobreak >nul
 echo Starting backend with real predictions...
 echo.
 echo Once backend starts:
-echo   1. Open: index_ornithologist.html
+echo   1. Open: frontend\index_final.html
 echo   2. Upload an audio file
 echo   3. Click recent predictions to review
 echo   4. Check agreement matrix and confusion species

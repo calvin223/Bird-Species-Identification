@@ -18,11 +18,9 @@ def import_module_from_file(module_name, file_path):
     spec.loader.exec_module(module)
     return module
 
-# Set up base path
-base_path = Path(r"D:\University\Comp702\project")
-
-# Add ensemble models path
-sys.path.insert(0, str(base_path / "ensemble model" / "models"))
+# All architecture files live alongside this loader
+models_dir = Path(__file__).resolve().parent
+sys.path.insert(0, str(models_dir))
 
 def load_model_fixed(model_type: str, model_path: str, device: str = 'cuda') -> nn.Module:
     """
@@ -46,7 +44,7 @@ def load_model_fixed(model_type: str, model_path: str, device: str = 'cuda') -> 
             # Model 3: DenseNet - Direct import
             densenet_module = import_module_from_file(
                 "densenet_memory_efficient",
-                base_path / "model 3" / "models" / "densenet_memory_efficient.py"
+                models_dir / "densenet_memory_efficient.py"
             )
             model = densenet_module.MemoryEfficientDenseNet121(
                 num_classes=30,
@@ -62,7 +60,7 @@ def load_model_fixed(model_type: str, model_path: str, device: str = 'cuda') -> 
             # Model 4: AST - Direct import
             ast_module = import_module_from_file(
                 "ast_bird",
-                base_path / "model 4" / "models" / "ast_bird.py"
+                models_dir / "ast_bird.py"
             )
             model = ast_module.AST_Bird(
                 img_size=(128, 259),
@@ -85,7 +83,7 @@ def load_model_fixed(model_type: str, model_path: str, device: str = 'cuda') -> 
             # Model 6: PANNs - Direct import
             panns_module = import_module_from_file(
                 "panns_cnn14",
-                base_path / "model 6" / "models" / "panns_cnn14.py"
+                models_dir / "panns_cnn14.py"
             )
             model = panns_module.BirdCallCNN14(num_classes=30)
             

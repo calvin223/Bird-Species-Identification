@@ -1,0 +1,97 @@
+# ResNet-50 CBAM Configuration for Bird Call Classification
+
+# Model configuration
+model:
+  num_classes: 30
+  in_channels: 1  # Single channel spectrograms
+  use_cbam: true
+  drop_path_rate: 0.2  # Stochastic depth
+  use_freq_attention: true
+
+# Data configuration
+data:
+  data_dir: "../../data/bird_calls_30species_memmap"
+  num_workers: 0  # Set to 0 to avoid Windows multiprocessing issues
+  pin_memory: true
+  use_weighted_sampling: true  # Balance classes during training
+
+# Training configuration
+training:
+  num_epochs: 100
+  batch_size: 32  # Start with smaller batch for testing
+  gradient_clip_val: 1.0
+  use_label_smoothing: true
+  label_smoothing_epsilon: 0.1
+  mixed_precision: true  # Enable AMP for RTX 4080
+
+# Optimizer configuration
+optimizer:
+  learning_rate: 0.001
+  weight_decay: 0.01  # AdamW weight decay
+
+# Scheduler configuration
+scheduler:
+  T_0: 10  # Initial restart period
+  T_mult: 2  # Period doubling factor
+  eta_min: 1e-6  # Minimum learning rate
+
+# Augmentation configuration
+augmentation:
+  spec_augment:
+    enabled: true
+    time_mask_param: 40
+    freq_mask_param: 20
+    n_time_masks: 2
+    n_freq_masks: 2
+    p: 0.8
+  
+  time_shift:
+    enabled: true
+    shift_range: 20
+    p: 0.5
+  
+  frequency_mask:
+    enabled: true
+    mask_param: 10
+    n_masks: 1
+    p: 0.3
+  
+  gaussian_noise:
+    enabled: true
+    sigma: 0.05
+    p: 0.3
+  
+  random_amplitude:
+    enabled: true
+    min_scale: 0.8
+    max_scale: 1.2
+    p: 0.5
+  
+  mixup:
+    enabled: true
+    alpha: 0.3
+    p: 0.5
+  
+  cutmix:
+    enabled: true
+    alpha: 1.0
+    p: 0.5
+
+# Checkpoint configuration
+checkpoint:
+  save_dir: "checkpoints"
+  save_every: 10  # Save checkpoint every N epochs
+  keep_last: 3  # Keep last N checkpoints
+
+# Logging configuration
+logging:
+  log_dir: "logs"
+  use_wandb: false
+  wandb_project: "bird-call-resnet50-cbam"
+  run_name: "resnet50_cbam_full_augmentation"
+
+# Visualization configuration
+visualization:
+  save_attention_maps: false
+  output_dir: "visualizations"
+  samples_per_epoch: 10

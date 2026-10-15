@@ -5,6 +5,8 @@ __pycache__/
 venv/
 
 # Model weights and data (too large for the repository)
+weights/
+data/
 *.pth
 *.pt
 *.dat
@@ -13,6 +15,9 @@ venv/
 # Runtime output
 backend/uploads/
 outputs/
+checkpoints/
+logs/
+visualizations/
 
 # OS / editor
 .DS_Store

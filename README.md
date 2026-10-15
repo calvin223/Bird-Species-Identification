@@ -20,6 +20,10 @@ Built as my MSc Computer Science dissertation at the University of Liverpool.
 
 Each model's vote is weighted according to its measured accuracy, and the ensemble reports how many models agree on the prediction alongside the confidence score.
 
+The full test-set report (23,793 segments, per-species precision and recall) is in [`results/test_set_report.txt`](results/test_set_report.txt).
+
+![Ensemble confusion matrix](results/normalized_confusion_matrix.png)
+
 ## How it works
 
 ```
@@ -44,11 +48,12 @@ species, scientific name, confidence, model agreement
 | Folder | Contents |
 |--------|----------|
 | `preprocessing/` | Converts raw recordings into memory-mapped spectrogram datasets for training |
-| `training/` | One training script per model architecture |
+| `training/` | One folder per model, each with its training script, config and helper modules |
 | `ensemble/` | Model loading, ensemble strategies, inference and `configs/ensemble_config.yaml` |
 | `backend/` | Flask API (`/api/classify`, `/api/health`) that runs the ensemble on uploaded audio |
 | `frontend/` | Web interface: audio upload, spectrogram view, per-model predictions, agreement matrix and PDF report export |
 | `tests/` | Ensemble tests and test-set evaluation |
+| `results/` | Confusion matrices and the test-set evaluation report |
 
 ## Tech stack
 
@@ -60,21 +65,36 @@ Barn Owl, Black-headed Gull, Blackcap, Blue Tit, Bullfinch, Chaffinch, Chiffchaf
 
 ## Running it
 
-The trained model weights (about 170M parameters in total) and the training dataset are not included in this repository because of their size. The source code for every stage is here, and the model and data paths are set in `ensemble/configs/ensemble_config.yaml`.
+The trained model weights (about 1.1 GB) and the dataset are not included in this repository because of their size. The ensemble expects the weights in a `weights/` folder at the repository root, using the names set in `ensemble/configs/ensemble_config.yaml`:
 
-With the weights in place:
+```
+weights/
+├── efficientnet_b1.pth
+├── resnet50_cbam.pth
+├── densenet121.pth
+├── ast.pth
+├── convnext_tiny.pth
+└── panns_cnn14.pth
+```
+
+With the weights in place, run these from the repository root:
 
 ```bash
 pip install -r requirements.txt
 
 # Command-line identification
-cd ensemble
-python bird_identifier_fixed.py path/to/recording.wav
+python ensemble/bird_identifier_fixed.py path/to/recording.wav
 
 # Web interface
 python backend/backend_direct.py      # API on http://localhost:5000
 # then open frontend/index_final.html in a browser
 ```
+
+### Retraining
+
+1. Put the raw recordings in `data/raw/bird_recordings/`, one folder per species, and run `python preprocessing/preprocess_selected_30_species_memmap.py`. This writes the spectrogram dataset to `data/bird_calls_30species_memmap/`.
+2. Each folder in `training/` is self-contained. Run its script from inside that folder, for example `cd training/resnet50_cbam` and then `python train_resnet50_cbam.py`.
+3. `python tests/evaluate_test_set.py` scores the ensemble on the full test set.
 
 ### Reading the confidence score
 
