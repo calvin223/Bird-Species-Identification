@@ -65,7 +65,13 @@ Barn Owl, Black-headed Gull, Blackcap, Blue Tit, Bullfinch, Chaffinch, Chiffchaf
 
 ## Running it
 
-The trained model weights (about 1.1 GB) and the dataset are not included in this repository because of their size. The ensemble expects the weights in a `weights/` folder at the repository root, using the names set in `ensemble/configs/ensemble_config.yaml`:
+The trained model weights (about 1.2 GB) are too large for the repository itself, so they are published as a [GitHub release](https://github.com/calvin223/Bird-Species-Identification/releases/tag/v1.0.0). Download the six `.pth` files into a `weights/` folder at the repository root, either from the release page or with the GitHub CLI:
+
+```bash
+gh release download v1.0.0 --repo calvin223/Bird-Species-Identification --dir weights
+```
+
+The file names are set in `ensemble/configs/ensemble_config.yaml`:
 
 ```
 weights/
@@ -93,7 +99,7 @@ python backend/backend_direct.py      # API on http://localhost:5000
 ### Retraining
 
 1. Put the raw recordings in `data/raw/bird_recordings/`, one folder per species, and run `python preprocessing/preprocess_selected_30_species_memmap.py`. This writes the spectrogram dataset to `data/bird_calls_30species_memmap/`.
-2. Each folder in `training/` is self-contained. Run its script from inside that folder, for example `cd training/resnet50_cbam` and then `python train_resnet50_cbam.py`.
+2. Each folder in `training/` is self-contained. Run its script from inside that folder, for example `cd training/resnet50_cbam` and then `python train_resnet50_cbam.py`. In `training/ast/`, `train_ast_bird.py` trains the AST used in the ensemble, while `train_ast.py` builds the larger Hugging Face AST instead.
 3. `python tests/evaluate_test_set.py` scores the ensemble on the full test set.
 
 ### Reading the confidence score
@@ -103,3 +109,7 @@ python backend/backend_direct.py      # API on http://localhost:5000
 | Above 70% | Strong identification with model consensus |
 | 35% to 70% | Probable identification; check recording quality if unexpected |
 | Below 35% | Likely an out-of-scope species or a poor recording |
+
+## License
+
+The code is released under the [MIT License](LICENSE). The bird photos in `frontend/assets/birds/` are not covered by it; see that folder's README. The model weights were trained on recordings from [xeno-canto](https://xeno-canto.org), many of which are licensed for non-commercial use only, so the weights are shared for research and educational use.
