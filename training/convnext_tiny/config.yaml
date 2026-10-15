@@ -1,0 +1,197 @@
+# ConvNeXt-Tiny Configuration for Bird Call Classification
+# Optimized for GTX 1650 (4GB VRAM) with 95.89% target accuracy
+
+# Dataset paths
+dataset:
+  root_dir: "../../data/bird_calls_30species_memmap"
+  train_data: "train_features.dat"
+  train_labels: "train_labels.npy"
+  val_data: "val_features.dat"
+  val_labels: "val_labels.npy"
+  test_data: "test_features.dat"
+  test_labels: "test_labels.npy"
+  num_classes: 30
+  input_shape: [1, 128, 259]  # [channels, freq_bins, time_frames]
+  
+  # Class names for reference
+  class_names: [
+    "Barn Owl", "Black-headed Gull", "Blackcap", "Blue Tit", "Bullfinch",
+    "Chaffinch", "Chiffchaff", "Coal Tit", "Common Blackbird", "Coot",
+    "Dunnock", "Eurasian Magpie", "Eurasian Wren", "European Greenfinch",
+    "European Robin", "Fieldfare", "Goldcrest", "Great Spotted Woodpecker",
+    "Great Tit", "House Sparrow", "Jackdaw", "Long-tailed Tit", "Mallard",
+    "Moorhen", "Nuthatch", "Pied Wagtail", "Starling", "Swallow",
+    "Tawny Owl", "Water Rail"
+  ]
+  
+  # Challenging species pairs (for special handling)
+  confusion_pairs:
+    - ["Coal Tit", "Goldcrest"]
+    - ["Coot", "Moorhen"]
+  
+  challenging_species: ["Starling", "Pied Wagtail", "Moorhen"]
+
+# Model architecture
+model:
+  name: "ConvNeXt-Tiny-BirdCall"
+  in_channels: 1  # Single channel mel-spectrogram
+  num_classes: 30
+  
+  # ConvNeXt-Tiny specific
+  depths: [3, 3, 9, 3]  # Blocks per stage
+  dims: [96, 192, 384, 768]  # Channels per stage
+  
+  # Architecture parameters
+  stem_kernel_size: 4  # Smaller than original 7x7 for spectrograms
+  stem_stride: 4
+  
+  # ConvNeXt innovations
+  drop_path_rate: 0.1  # Stochastic depth
+  layer_scale_init_value: 1.0e-6
+  
+  # Memory optimizations
+  use_checkpoint: true  # Gradient checkpointing for deeper blocks
+  checkpoint_stages: [2, 3]  # Apply to stages 2 and 3
+
+# Training configuration
+training:
+  # Batch sizes (optimized for RTX 4080 12GB VRAM)
+  batch_size: 64
+  val_batch_size: 32  # Smaller for validation
+  accumulation_steps: 1
+  effective_batch_size: 64  # 64 * 1
+  
+  # Epochs
+  num_epochs: 300
+  warmup_epochs: 5  # Reduced from 20
+  
+  # Optimizer (AdamW with ConvNeXt settings)
+  optimizer:
+    type: "AdamW"
+    lr: 2.0e-3  # Increased from 1e-3 for faster learning
+    weight_decay: 0.05  # Higher weight decay
+    betas: [0.9, 0.999]
+    eps: 1.0e-8
+  
+  # Layer-wise LR decay
+  layer_lr_decay:
+    enabled: false  # Temporarily disabled due to error
+    decay_rate: 0.7  # Earlier layers learn slower
+  
+  # Scheduler
+  scheduler:
+    type: "cosine"
+    warmup_lr: 1.0e-5  # Increased from 1e-6
+    min_lr: 1.0e-6
+  
+  # Loss
+  loss:
+    type: "cross_entropy"
+    label_smoothing: 0.1  # Re-enable for better generalization
+    use_class_weights: false  # Keep disabled for now
+    
+  # Mixed precision
+  mixed_precision:
+    enabled: true  # Re-enable for RTX 4080
+    opt_level: "O1"  # Less aggressive, more stable
+    
+  # Early stopping
+  early_stopping:
+    patience: 30
+    min_delta: 0.001
+    
+  # Checkpointing
+  checkpoint:
+    save_dir: "checkpoints"
+    save_top_k: 3
+    monitor: "val_accuracy"
+
+# Data augmentation (runtime)
+augmentation:
+  # SpecAugment
+  spec_augment:
+    enabled: true
+    time_masks: 2
+    time_mask_param: 30  # Adaptive for 259 frames
+    freq_masks: 2
+    freq_mask_param: 20  # Adaptive for 128 bins
+    
+  # MixUp
+  mixup:
+    enabled: true
+    alpha: 0.4  # Higher for ConvNeXt
+    prob: 0.5
+    
+  # CutMix
+  cutmix:
+    enabled: true
+    alpha: 1.0
+    prob: 0.3
+    
+  # Random Resized Crop
+  random_crop:
+    enabled: true
+    scale: [0.8, 1.0]
+    ratio: [0.8, 1.2]
+    
+  # Additional augmentations
+  gaussian_noise:
+    enabled: true
+    std: 0.005
+    prob: 0.3
+    
+  # Species-specific augmentation boost
+  boost_challenging_species: true
+  boost_factor: 1.5  # Apply stronger aug to challenging species
+
+# Memory management
+memory:
+  # GPU memory limits
+  max_gpu_memory_gb: 11.5  # Leave buffer for RTX 4080
+  warning_threshold_gb: 10.0
+  
+  # Dataloader settings (Windows-specific)
+  num_workers: 0  # Keep at 0 for memory-mapped arrays on Windows
+  pin_memory: true  # Enable for faster transfer
+  persistent_workers: false  # Must be false when num_workers=0
+  
+  # Memory monitoring
+  monitor_interval: 100  # Check every N batches
+  auto_reduce_batch: false  # Not needed with 12GB
+  min_batch_size: 64
+  
+  # Cache management
+  clear_cache_interval: 10  # Clear every N batches
+
+# Inference settings
+inference:
+  batch_size: 16  # Can be larger for inference
+  use_tta: true  # Test-time augmentation
+  tta_transforms: 5
+
+# Logging and monitoring
+logging:
+  log_dir: "logs"
+  tensorboard: true
+  log_interval: 50  # Log every N batches
+  
+  # Metrics to track
+  metrics:
+    - "accuracy"
+    - "top3_accuracy"
+    - "per_class_accuracy"
+    - "confusion_matrix"
+    - "memory_usage"
+
+# Comparison with EfficientNet
+comparison:
+  efficientnet_checkpoint: "../model 3/checkpoints/best_model.pth"
+  save_predictions: true
+  analyze_disagreements: true
+
+# Hardware info (for reference)
+hardware:
+  gpu: "RTX 4080 (12GB)"
+  cpu: "i9-14900HX"
+  ram: "32GB DDR5"
+  os: "Windows"

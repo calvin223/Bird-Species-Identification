@@ -20,6 +20,10 @@ from utils.audio_preprocessing import AudioPreprocessor
 
 warnings.filterwarnings('ignore')
 
+# Relative paths resolve from here: the config from this folder, model weights from the repo root
+ENSEMBLE_DIR = Path(__file__).resolve().parent
+REPO_ROOT = ENSEMBLE_DIR.parent
+
 
 class BirdCallEnsemble:
     """
@@ -35,7 +39,7 @@ class BirdCallEnsemble:
             config_path: Path to configuration file
         """
         # Load configuration
-        with open(config_path, 'r') as f:
+        with open(ENSEMBLE_DIR / config_path, 'r') as f:
             self.config = yaml.safe_load(f)
         
         # Set device
@@ -83,7 +87,7 @@ class BirdCallEnsemble:
                 print(f"Loading {model_config['name']}...")
                 model = load_model_fixed(
                     model_type=model_config['type'],
-                    model_path=model_config['path'],
+                    model_path=REPO_ROOT / model_config['path'],
                     device=self.device
                 )
                 self.models[model_key] = model

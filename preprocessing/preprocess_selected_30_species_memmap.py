@@ -363,8 +363,9 @@ def verify_dataset(output_dir):
 def main():
     """Main preprocessing pipeline"""
     # Configuration
-    raw_data_dir = r"D:\University\Comp702\01_raw_data\bird_recordings"
-    output_dir = r"D:\University\Comp702\02_data\bird_calls_30species_memmap"
+    repo_root = Path(__file__).resolve().parent.parent
+    raw_data_dir = str(repo_root / "data" / "raw" / "bird_recordings")
+    output_dir = str(repo_root / "data" / "bird_calls_30species_memmap")
     
     print("Bird Call Dataset Preprocessing Pipeline")
     print("=" * 60)

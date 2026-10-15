@@ -21,7 +21,8 @@ import contextlib
 
 # Need to make sure Python can find the ensemble model directory
 # Putting it at the front of sys.path so it gets checked first
-ENSEMBLE_MODEL_PATH = r"D:\University\Comp702\project\ensemble model"
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ENSEMBLE_MODEL_PATH = os.path.join(REPO_ROOT, "ensemble")
 if ENSEMBLE_MODEL_PATH not in sys.path:
     sys.path.insert(0, ENSEMBLE_MODEL_PATH)
 
@@ -55,7 +56,7 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Where all the bird images live
-BIRD_IMAGES_DIR = r"D:\University\Comp702\project\frontend\assets\birds"
+BIRD_IMAGES_DIR = os.path.join(REPO_ROOT, "frontend", "assets", "birds")
 
 # Mapping species names to their image files
 # Had to get all these images from various sources - took forever!

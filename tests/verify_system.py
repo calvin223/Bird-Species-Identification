@@ -12,7 +12,7 @@ import warnings
 import sys
 
 warnings.filterwarnings('ignore')
-sys.path.append(str(Path(__file__).parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent / 'ensemble'))
 
 from ensemble_model import BirdCallEnsemble
 

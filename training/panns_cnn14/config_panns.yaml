@@ -1,0 +1,107 @@
+model:
+  architecture: CNN14
+  pretrained: true
+  audioset_checkpoint: 'Cnn14_mAP=0.431.pth'
+  checkpoint_url: 'https://zenodo.org/record/3987831/files/Cnn14_mAP%3D0.431.pth?download=1'
+  num_classes: 30
+  freeze_base: false
+  dropout: 0.5
+  embed_dim: 2048
+  use_attention_pooling: false
+  feature_fusion: false
+  
+data:
+  root_dir: '../../data/bird_calls_30species_memmap'
+  input_shape: [1, 128, 259]
+  target_shape: [1, 1024, 128]
+  normalize: 'per_sample'
+  mixup_alpha: 0.3
+  spec_augment: true
+  sample_rate: 44100
+  target_sample_rate: 32000
+  
+training:
+  batch_size: 32
+  learning_rate: 5e-4
+  scheduler: 'cosine'
+  epochs: 100
+  warmup_epochs: 2
+  weight_decay: 1e-4
+  label_smoothing: 0.1
+  gradient_clip: 1.0
+  accumulation_steps: 1
+  early_stopping_patience: 15
+  
+optimization:
+  mixed_precision: true
+  channels_last: false
+  compile_model: false
+  num_workers: 2
+  pin_memory: false
+  persistent_workers: true
+  
+augmentation:
+  spec_augment:
+    time_masks: 2
+    time_mask_param: 64
+    freq_masks: 2
+    freq_mask_param: 16
+    prob: 0.3
+  mixup:
+    alpha: 0.3
+    prob: 0.3
+  random_resized_crop:
+    freq_scale: [0.8, 1.0]
+    time_scale: [0.8, 1.0]
+    prob: 0.2
+  gaussian_noise:
+    std: 0.005
+    prob: 0.2
+  time_shift:
+    shift_range: [-50, 50]
+    prob: 0.2
+  frequency_masking:
+    freq_masks: 2
+    freq_width: 10
+    prob: 0.2
+    
+loss:
+  primary: 'cross_entropy'
+  use_center_loss: false
+  center_loss_weight: 0.01
+  use_arcface: false
+  arcface_scale: 30
+  arcface_margin: 0.5
+  
+training_stages:
+  - name: 'classifier_only'
+    epochs: 10
+    freeze_pattern: '^((?!fc_audioset).)*$'
+    lr_multiplier: 1.0
+  - name: 'unfreeze_last_layers'
+    epochs: 20
+    freeze_pattern: '^((?!fc_audioset|fc1|conv_block6).)*$'
+    lr_multiplier: 0.5
+  - name: 'full_finetune'
+    epochs: 70
+    freeze_pattern: null
+    lr_multiplier: 0.1
+    
+logging:
+  log_dir: './logs'
+  save_frequency: 5
+  use_wandb: true
+  project_name: 'bird_calls_panns'
+  
+inference:
+  tta_augmentations: 5
+  embedding_layer: 'fc1'
+  chunk_size: 10000
+  
+bird_groups:
+  owls: ['barn_owl', 'tawny_owl']
+  water_birds: ['coot', 'moorhen', 'mallard']
+  small_songbirds: ['blue_tit', 'coal_tit', 'great_tit']
+  larger_songbirds: ['blackbird', 'robin', 'chaffinch']
+  corvids: ['magpie', 'jackdaw']
+  finches: ['bullfinch', 'greenfinch', 'goldfinch']

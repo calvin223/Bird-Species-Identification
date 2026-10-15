@@ -1,0 +1,54 @@
+================================================================================
+ENSEMBLE MODEL TEST EVALUATION REPORT
+================================================================================
+
+Date: 2025-08-19 00:09:35
+Test Samples: 23793
+Number of Classes: 30
+Number of Models: 6
+
+----------------------------------------
+OVERALL PERFORMANCE
+----------------------------------------
+Ensemble Accuracy: 97.28%
+Average Confidence: 73.74%
+Confidence when Correct: 74.76%
+Confidence when Wrong: 37.20%
+
+----------------------------------------
+INDIVIDUAL MODEL ACCURACIES
+----------------------------------------
+EfficientNet-B1          : 95.77%
+ResNet-50 CBAM           : 98.15%
+DenseNet-121             : 86.33%
+AST                      : 85.60%
+ConvNeXt-Tiny            : 96.52%
+PANNs CNN14              : 88.59%
+
+----------------------------------------
+TOP 10 BEST PERFORMING SPECIES
+----------------------------------------
+ 1. Great Spotted Woodpecker  F1: 99.66% (P: 99.55%, R: 99.77%)
+ 2. Chiffchaff                F1: 99.15% (P: 98.76%, R: 99.55%)
+ 3. Nuthatch                  F1: 98.76% (P: 98.65%, R: 98.88%)
+ 4. House Sparrow             F1: 98.62% (P: 97.38%, R: 99.89%)
+ 5. Long-tailed Tit           F1: 98.54% (P: 97.87%, R: 99.21%)
+ 6. Chaffinch                 F1: 98.38% (P: 97.89%, R: 98.88%)
+ 7. Tawny Owl                 F1: 98.28% (P: 97.36%, R: 99.22%)
+ 8. Great Tit                 F1: 98.22% (P: 97.67%, R: 98.77%)
+ 9. Bullfinch                 F1: 97.85% (P: 97.04%, R: 98.68%)
+10. Common Blackbird          F1: 97.70% (P: 96.81%, R: 98.61%)
+
+----------------------------------------
+TOP 10 MOST CHALLENGING SPECIES
+----------------------------------------
+ 1. Blackcap                  F1: 96.52% (P: 96.81%, R: 96.22%)
+ 2. Pied Wagtail              F1: 96.45% (P: 97.30%, R: 95.62%)
+ 3. Dunnock                   F1: 96.43% (P: 97.55%, R: 95.34%)
+ 4. Blue Tit                  F1: 96.36% (P: 95.91%, R: 96.81%)
+ 5. Eurasian Magpie           F1: 96.30% (P: 97.87%, R: 94.78%)
+ 6. European Greenfinch       F1: 95.96% (P: 96.59%, R: 95.34%)
+ 7. Moorhen                   F1: 95.83% (P: 96.76%, R: 94.92%)
+ 8. Fieldfare                 F1: 95.81% (P: 96.01%, R: 95.61%)
+ 9. Barn Owl                  F1: 94.89% (P: 91.71%, R: 98.30%)
+10. Starling                  F1: 94.35% (P: 96.38%, R: 92.41%)

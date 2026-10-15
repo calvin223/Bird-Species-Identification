@@ -448,8 +448,9 @@ class ASTTrainer:
 
 def main():
     # Configuration
-    data_dir = r"D:\University\Comp702\02_data\bird_calls_30species_memmap"
-    output_dir = r"D:\University\Comp702\project\model 4"
+    # Paths are relative to this folder, so run the script from here
+    data_dir = "../../data/bird_calls_30species_memmap"
+    output_dir = "checkpoints"
     
     # Device setup
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

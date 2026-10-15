@@ -10,7 +10,7 @@ from pathlib import Path
 import yaml
 
 # Add parent directory to path
-sys.path.append(str(Path(__file__).parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent / 'ensemble'))
 
 def test_imports():
     """Test that all required modules can be imported."""
@@ -32,7 +32,7 @@ def test_config():
     """Test configuration file loading."""
     print("\nTesting configuration...")
     try:
-        config_path = Path("configs/ensemble_config.yaml")
+        config_path = Path(__file__).resolve().parent.parent / "ensemble" / "configs" / "ensemble_config.yaml"
         if not config_path.exists():
             print(f"✗ Config file not found: {config_path}")
             return False
@@ -62,7 +62,7 @@ def test_audio_preprocessing():
     print("\nTesting audio preprocessing...")
     try:
         # Load config
-        with open("configs/ensemble_config.yaml", 'r') as f:
+        with open(Path(__file__).resolve().parent.parent / "ensemble" / "configs" / "ensemble_config.yaml", 'r') as f:
             config = yaml.safe_load(f)
         
         from utils.audio_preprocessing import AudioPreprocessor

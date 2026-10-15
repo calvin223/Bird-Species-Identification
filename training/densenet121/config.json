@@ -1,0 +1,77 @@
+{
+    "dataset": {
+        "data_path": "../../data/bird_calls_30species_memmap",
+        "num_classes": 30,
+        "input_shape": [1, 128, 259],
+        "memmap_mode": "r",
+        "species_names": [
+            "Barn Owl", "Black-headed Gull", "Blackcap", "Blue Tit", "Bullfinch",
+            "Chaffinch", "Chiffchaff", "Coal Tit", "Common Blackbird", "Coot",
+            "Dunnock", "Eurasian Magpie", "Eurasian Wren", "European Greenfinch",
+            "European Robin", "Fieldfare", "Goldcrest", "Great Spotted Woodpecker",
+            "Great Tit", "House Sparrow", "Jackdaw", "Long-tailed Tit", "Mallard",
+            "Moorhen", "Nuthatch", "Pied Wagtail", "Starling", "Swallow",
+            "Tawny Owl", "Water Rail"
+        ]
+    },
+    "model": {
+        "architecture": "densenet121",
+        "growth_rate": 32,
+        "compression": 0.5,
+        "num_init_features": 64,
+        "drop_rate": 0.3,
+        "use_bottleneck": true,
+        "gradient_checkpointing": true,
+        "frequency_attention": true
+    },
+    "training": {
+        "batch_size": 24,
+        "accumulation_steps": 2,
+        "num_workers": 0,
+        "pin_memory": false,
+        "epochs": 150,
+        "learning_rate": 0.01,
+        "weight_decay": 0.0001,
+        "momentum": 0.9,
+        "nesterov": true,
+        "gradient_clipping": 1.0,
+        "mixed_precision": true,
+        "label_smoothing": 0.1,
+        "early_stopping_patience": 20,
+        "checkpoint_interval": 10,
+        "memory_limit_gb": 3.8
+    },
+    "augmentation": {
+        "specaugment": {
+            "enabled": true,
+            "time_masks": 2,
+            "time_mask_max": 30,
+            "freq_masks": 2,
+            "freq_mask_max": 20
+        },
+        "mixup": {
+            "enabled": true,
+            "alpha": 0.2,
+            "probability": 0.3
+        },
+        "time_shift": {
+            "enabled": true,
+            "max_shift": 20,
+            "probability": 0.5
+        }
+    },
+    "scheduler": {
+        "type": "ReduceLROnPlateau",
+        "patience": 5,
+        "factor": 0.5,
+        "min_lr": 1e-6,
+        "mode": "max"
+    },
+    "logging": {
+        "log_interval": 100,
+        "memory_log_interval": 50,
+        "save_dir": "checkpoints",
+        "tensorboard_dir": "runs",
+        "monitor_memory": true
+    }
+}

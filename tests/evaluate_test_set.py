@@ -18,7 +18,7 @@ import seaborn as sns
 warnings.filterwarnings('ignore')
 
 # Add parent directory to path
-sys.path.append(str(Path(__file__).parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent / 'ensemble'))
 
 from ensemble_model import BirdCallEnsemble
 
@@ -33,8 +33,9 @@ class EnsembleTestEvaluator:
         self.device = self.ensemble.device
         
         # Data paths
-        self.test_features_path = r"D:\University\Comp702\02_data\bird_calls_30species_memmap\test_features.dat"
-        self.test_labels_path = r"D:\University\Comp702\02_data\bird_calls_30species_memmap\test_labels.npy"
+        data_dir = Path(__file__).resolve().parent.parent / "data" / "bird_calls_30species_memmap"
+        self.test_features_path = data_dir / "test_features.dat"
+        self.test_labels_path = data_dir / "test_labels.npy"
         
         # Load test data info
         self._load_test_data()

@@ -492,8 +492,9 @@ class BirdCallTrainer:
 
 def main():
     # Configuration paths
-    data_dir = r"D:\University\Comp702\02_data\bird_calls_30species_memmap"
-    output_dir = r"D:\University\Comp702\project\model 1"
+    # Paths are relative to this folder, so run the script from here
+    data_dir = "../../data/bird_calls_30species_memmap"
+    output_dir = "checkpoints"
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     batch_size = 16

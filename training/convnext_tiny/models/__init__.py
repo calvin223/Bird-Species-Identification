@@ -1,0 +1,1 @@
+# ConvNeXt-Tiny model for bird call classification
